@@ -16,6 +16,8 @@ import face_recognition
 from flask import Flask, jsonify, request, redirect
 import cv2
 import numpy
+import os
+import time
 # You can change this to any folder on your system
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
@@ -61,13 +63,15 @@ def detect_faces_in_image(file_stream,file_stream1):
 
     # 载入用户上传的图片
     # img = face_recognition.load_image_file(file_stream)
-    # 为用户上传的图片中的人脸编码
+    if not os.path.isdir("tmpdata"):
+        os.mkdir("tmpdata")
     img1 = face_recognition.load_image_file(file_stream)
     img2 = face_recognition.load_image_file(file_stream1)
     unknown_face_encodings = face_recognition.face_encodings(img1)
     unknown_face_encodings1 = face_recognition.face_encodings(img2)
-    # cv2.imwrite("tmp.jpg",cv2.cvtColor(numpy.asarray(img2),cv2.COLOR_RGB2BGR))
-    # cv2.imwrite("tmp.jpg",cv2.cvtColor(numpy.asarray(img2),cv2.COLOR_RGB2BGR))
+    t = time.time()
+    cv2.imwrite("tmpdata/"+str(t)+"_1.jpg",cv2.cvtColor(numpy.asarray(img1),cv2.COLOR_RGB2BGR))
+    cv2.imwrite("tmpdata/"+str(t)+"_0.jpg",cv2.cvtColor(numpy.asarray(img2),cv2.COLOR_RGB2BGR))
 
     face_found = False
     is_same_person = False
@@ -75,7 +79,7 @@ def detect_faces_in_image(file_stream,file_stream1):
     if len(unknown_face_encodings) > 0 and len(unknown_face_encodings1):
         face_found = True
         # 看看图片中的第一张脸是不是相同
-        match_results = face_recognition.compare_faces([unknown_face_encodings1[0]], unknown_face_encodings[0])
+        match_results = face_recognition.compare_faces([unknown_face_encodings1[0]], unknown_face_encodings[0],tolerance=0.4)
         if match_results[0]:
             is_same_person = True
 

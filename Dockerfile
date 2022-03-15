@@ -1,6 +1,6 @@
 # This is a sample Dockerfile you can modify to deploy your own app based on face_recognition
 
-FROM python:3.6-slim-stretch
+FROM python:3.9.10
 
 RUN apt-get -y update
 RUN apt-get install -y --fix-missing \
@@ -46,5 +46,26 @@ RUN cd /root/face_recognition && \
     pip3 install -r requirements.txt && \
     python3 setup.py install
 
-CMD cd /root/face_recognition/examples && \
-    python3 recognize_faces_in_pictures.py
+WORKDIR /
+
+RUN git clone https://github.com/FalkTannhaeuser/python-onvif-zeep.git
+
+WORKDIR //python-onvif-zeep
+
+RUN python setup.py install
+
+RUN pip3 install opencv-python-headless
+
+WORKDIR /root/face_recognition/
+# CMD cd /root/face_recognition/examples && \
+    # python3 web_service_example_Simplified_Chinese.py
+# docker stop facetest && docker rm facetest
+# docker build -t raidavid/facetest .
+# docker stop facetest && docker rm facetest && \
+# docker run --name facetest \
+# -p 5432:5001 \
+# --restart=always \
+# -d \
+# -it \
+# raidavid/facetest
+
